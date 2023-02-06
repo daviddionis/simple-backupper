@@ -1,7 +1,17 @@
 import { Backup } from "../../config";
-import { executeFoldersBackups } from "../controllers/folders.controllers";
+import { backupFolder, executeFoldersBackups } from "../controllers/folders.controllers";
 
-export const executeFoldersBackupCJ = () => {
-    executeFoldersBackups();
-    setInterval(() => executeFoldersBackups(), Backup.Folders.everySeconds * 1000);
+export const executeFoldersBackupCJ = async () => {
+
+    let intervalIds: NodeJS.Timeout[] = [];
+
+    for (const folder of Backup.Folders.folders) {
+
+        await backupFolder(folder);
+
+        const intervalId = setInterval(() => backupFolder(folder), folder.everySeconds * 1000);
+
+        intervalIds.push(intervalId);
+    }
+
 }

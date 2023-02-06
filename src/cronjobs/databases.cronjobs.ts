@@ -1,8 +1,18 @@
 import { Backup } from "../../config";
-import { executeDatabasesBackups } from "../controllers/mysql.controllers";
+import { backupDatabase } from "../controllers/mysql.controllers";
 
-export const executeMySQLBackupCJ = () => {
-    executeDatabasesBackups();
-    setInterval(() => executeDatabasesBackups(), Backup.Databases.everySeconds * 1000);
+export const executeMySQLBackupCJ = async () => {
+
+    let intervalIds: NodeJS.Timeout[] = [];
+
+    for (const database of Backup.Databases.databases) {
+
+        await backupDatabase(database);
+
+        const intervalId = setInterval(() => backupDatabase(database), database.everySeconds * 1000);
+
+        intervalIds.push(intervalId);
+    }
+
 }
 

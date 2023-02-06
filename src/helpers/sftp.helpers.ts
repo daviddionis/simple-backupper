@@ -9,7 +9,7 @@ export const startClient = (): Promise<Client> =>
         ).catch(err => reject(err));
     });
 
-export const sendFileFromTo = (from: string, to: string): Promise<void> =>
+export const sendFileViaSFTPFromTo = (from: string, to: string): Promise<void> =>
     new Promise(async (resolve, reject) => {
         try {
             const client = await startClient();

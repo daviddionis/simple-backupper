@@ -1,18 +1,24 @@
 import { ConnectOptions } from "ssh2-sftp-client";
+import { DatabaseBackupConfig, FolderBackupConfig, ViaTypes } from "./src/models/config.interfaces";
 
 export const EncryptionKey = 'AMegaUltraHyperSecureRobustEncryptionKey';
-
-export enum Vias {
-    Email = 'Email',
-    SFTP = 'SFTP',
-}
 
 export const MySQLConfig = {
     host: 'localhost',
     user: 'root',
-    password: 'password',
+    password: 'AVerySecurePassword',
     port: false,
     protocol: false,
+};
+
+export const NodeMailerConfig = {
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+        user: 'example@gmail.com',
+        pass: 'AVerySecurePassword',
+    },
 };
 
 export const SFTPConfig: ConnectOptions = {
@@ -24,21 +30,43 @@ export const SFTPConfig: ConnectOptions = {
 
 export const Backup = {
     Databases: {
-        everySeconds: 3600,
-        vias: [Vias.SFTP],
         databases: [
-            'db_name',
-        ],
+            {
+                database: 'database_name_1',
+                everySeconds: 3600,
+                via: [
+                    {
+                        type: ViaTypes.Email,
+                        destination: 'database.backups@example.com',
+                    },
+                    {
+                        type: ViaTypes.SFTP,
+                        destination: '/folder/where/to/save/backup',
+                    },
+                ]
+            },
+            {
+                database: 'database_name_2',
+                everySeconds: 3600,
+                via: {
+                    type: ViaTypes.Email,
+                    destination: 'database.backups@example.com',
+                }
+            },
+        ] as DatabaseBackupConfig[],
         tempDestination: './temp/db',
-        sftpDestination: '/root/backups/db',
     },
     Folders: {
-        everySeconds: 3600,
-        vias: [Vias.SFTP],
         folders: [
-            '/Users/my_user_name/Documents/folder_wanted'
-        ],
+            {
+                folder: '/folder/to/backup/images',
+                everySeconds: 3600,
+                via: {
+                    type: ViaTypes.SFTP,
+                    destination: '/folder/where/to/save/backup',
+                }
+            }
+        ] as FolderBackupConfig[],
         tempDestination: './temp/folders',
-        sftpDestination: '/root/backups/folders',
     }
 }
